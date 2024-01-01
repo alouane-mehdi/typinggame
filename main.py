@@ -1,48 +1,98 @@
 import pygame
+import random
+import time
 
 pygame.init()
 
-# Fonction pour afficher le menu
-def afficher_menu():
-    menu_font = pygame.font.Font("freesansbold.ttf", 80)
-    titre = menu_font.render("Typing Game", True, (255, 255, 255))
-    instruction = menu_font.render("Appuyez sur ESPACE pour commencer", True, (255, 255, 255))
-    
-    fenetre.blit(titre, (400, 100))
-    fenetre.blit(instruction, (300, 300))
+WIDTH = 800
+HEIGHT = 600
+black = (0, 0, 0)
+gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Typing Game')
+
+background = pygame.image.load('typinggame/entrée.jpg')
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+font = pygame.font.Font('typinggame/comic.ttf', 40)
+
+score = 0
+
+def new_word():
+    global displayword, mot, x_cor, y_cor, text
+    x_cor = random.randint(300, 700)
+    y_cor = 200
+    mot = ''
+    mots = open("typinggame/words.txt").read().split(', ')
+    displayword = random.choice(mots)
+
+new_word()
+
+font_name = pygame.font.match_font('arias')
+
+def draw_text(display, text, size, x, y):
+    font = pygame.font.Font(font_name, size)
+    text_surface = font.render(text, True, black)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    gameDisplay.blit(text_surface, text_rect)
+
+def game_front_screen():
+    gameDisplay.blit(background, (0, 0))
+    if not game_over:
+        draw_text(gameDisplay, "GAME OVER!", 90, WIDTH / 2, HEIGHT / 4)
+        draw_text(gameDisplay, "Score : " + str(score), 70, WIDTH / 2, HEIGHT / 2)
+    else:
+        draw_text(gameDisplay, "Appuyez sur une touche pour jouer !", 54, WIDTH / 2, 500)
     pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYUP:
+                waiting = False
 
-# Fenêtre du jeu
-pygame.display.set_caption("Typing Game")
-fenetre = pygame.display.set_mode((800, 600))  # Changer la résolution à 800x600
+game_over = True
+game_start = True
 
-# Arrière-plan
-background = pygame.image.load('typinggame/image.jpg')
-background = pygame.transform.scale(background, (800, 600))  # Adapter l'image à la résolution de la fenêtre
+while True:
+    if game_over:
+        if game_start:
+            game_front_screen()
+        game_start = False
+    game_over = False
 
-enCours = True
-menu = True
+    background = pygame.image.load('typinggame/city.jpg')
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+    personnage = pygame.image.load('typinggame/perso.jpg')
+    personnage = pygame.transform.scale(personnage, (50, 50))
 
-# Boucle principale
-while enCours:
-    
-    if menu:
-        afficher_menu()
-    
-    # Boucle pour les événements
+    gameDisplay.blit(background, (0, 0))
+
+
+    gameDisplay.blit(personnage, (x_cor - 100, y_cor))
+    draw_text(gameDisplay, str(displayword), 40, x_cor, y_cor)
+    draw_text(gameDisplay, 'Score:' + str(score), 40, WIDTH / 2, 5)
+
     for event in pygame.event.get():
-        # Événement de fermeture
         if event.type == pygame.QUIT:
-            enCours = False
             pygame.quit()
-        
-        # Touche pressée
+            quit()
         elif event.type == pygame.KEYDOWN:
-            # Touche Espace pour commencer le jeu
-            if event.key == pygame.K_SPACE:
-                menu = False
+            mot += pygame.key.name(event.key)
 
-    if not menu:
-        # Arrière-plan
-        fenetre.blit(background, (0, 0))  # Ajuster la position de l'arrière-plan
-        pygame.display.flip()
+            if displayword.startswith(mot):
+                if displayword == mot:
+                    score += len(displayword)
+                    new_word()
+            else:
+                game_front_screen()
+                time.sleep(2)
+                pygame.quit()
+
+    if y_cor < HEIGHT - 5:
+        pygame.display.update()
+    else:
+        game_front_screen()
+
+
