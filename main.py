@@ -10,10 +10,10 @@ black = (0, 0, 0)
 gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Typing Game')
 
-background = pygame.image.load('typinggame/entrée.jpg')
+background = pygame.image.load('entrée.jpg')
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-font = pygame.font.Font('typinggame/comic.ttf', 40)
+font = pygame.font.Font('comic.ttf', 40)
 
 score = 0
 
@@ -22,7 +22,7 @@ def new_word():
     x_cor = random.randint(300, 700)
     y_cor = 200
     mot = ''
-    mots = open("typinggame/words.txt").read().split(', ')
+    mots = open("words.txt").read().split(', ')
     displayword = random.choice(mots)
 
 new_word()
@@ -62,9 +62,9 @@ while True:
         game_start = False
     game_over = False
 
-    background = pygame.image.load('typinggame/city.jpg')
+    background = pygame.image.load('city.jpg')
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-    personnage = pygame.image.load('typinggame/perso.jpg')
+    personnage = pygame.image.load('perso.jpg')
     personnage = pygame.transform.scale(personnage, (50, 50))
 
     gameDisplay.blit(background, (0, 0))
